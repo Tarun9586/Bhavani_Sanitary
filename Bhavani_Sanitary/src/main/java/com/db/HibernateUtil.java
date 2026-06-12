@@ -23,24 +23,24 @@ public class HibernateUtil {
 
                 Properties properties = new Properties();
                 
-                // 1. PostgreSQL Driver update kiya
+                // Driver aur Dialect set karo
                 properties.put(Environment.DRIVER, "org.postgresql.Driver");
-                
-                // 2. Render ka URL update kiya (jdbc:postgresql format mein)
-                properties.put(Environment.URL, "jdbc:postgresql://dpg-d8if13mq1p3s73el92og-a.singapore-postgres.render.com:5432/bhavani_sanitary");
-                
-                properties.put(Environment.USER, "bhavani_sanitary_user");
-                properties.put(Environment.PASS, "dkxDv4cCDhXt0arpkYZOnIMSwdTTgW2o");
-                
-                // 3. PostgreSQL Dialect update kiya
                 properties.put(Environment.DIALECT, "org.hibernate.dialect.PostgreSQLDialect");
                 
+                // Render ke Environment Variables se data uthao (Safe tarika)
+                // Render dashboard mein 'DATABASE_URL', 'DB_USERNAME', 'DB_PASSWORD' set kar dena
+                properties.put(Environment.URL, System.getenv("DATABASE_URL"));
+                properties.put(Environment.USER, System.getenv("DB_USERNAME"));
+                properties.put(Environment.PASS, System.getenv("DB_PASSWORD"));
+                
+                // Database settings
                 properties.put(Environment.HBM2DDL_AUTO, "update");
                 properties.put(Environment.SHOW_SQL, true);
                 properties.put(Environment.FORMAT_SQL, true);
 
                 configuration.setProperties(properties);
                 
+                // Annotations register karo
                 configuration.addAnnotatedClass(User.class);
                 configuration.addAnnotatedClass(category.class);
                 configuration.addAnnotatedClass(product.class);
@@ -51,7 +51,7 @@ public class HibernateUtil {
                         .applySettings(configuration.getProperties()).build();
 
                 sessionFactory = configuration.buildSessionFactory(serviceRegistry);
-                System.out.println("Hibernate SessionFactory (PostgreSQL) Created Successfully!");
+                System.out.println("Hibernate SessionFactory (PostgreSQL) Created Successfully via Env Vars!");
             } catch (Exception e) {
                 System.err.println("CRITICAL ERROR: PostgreSQL Connection Failed!");
                 e.printStackTrace();
